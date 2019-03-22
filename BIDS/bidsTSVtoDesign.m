@@ -100,7 +100,7 @@ for ii = 1:length(tasks)
         numvol(scan) = hdr{1}.ImageSize(end);      
             
         % TSV
-        prefix = sprintf('sub-%s_ses-%s_task-%s_run-%d', ...
+        prefix = sprintf('sub-%s_ses-%s_task-%s_run-%02d', ...
             subject, session, tasks{ii}, runnum{ii}(jj));
         tsvfile  = sprintf('%s_events.tsv', prefix);        
         assert(exist(fullfile(pth,tsvfile), 'file')>0)  

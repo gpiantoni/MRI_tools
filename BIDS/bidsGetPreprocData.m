@@ -37,9 +37,9 @@ for ii = 1:length(tasks)
             fnamePrefixZeroPad = sprintf('*_task-%s*run-%02d_preproc*',...
                 tasks{ii},runnums{ii}(jj));
         else
-            fnamePrefix  = sprintf('*_task-%s*run-%d_bold*',...
+            fnamePrefix  = sprintf('*_task-%s*run-%d_bold.nii.gz',...
                 tasks{ii},runnums{ii}(jj));
-            fnamePrefixZeroPad = sprintf('*_task-%s*run-%02d_bold*',...
+            fnamePrefixZeroPad = sprintf('*_task-%s*run-%02d_bold.nii.gz',...
                 tasks{ii},runnums{ii}(jj));
         end
 
@@ -53,29 +53,31 @@ for ii = 1:length(tasks)
         % This guarantees that we found at least one
         assert(~isempty(fname));
         
-        [~, ~, ext] = fileparts(fname(1).name);
-        switch ext
-            case {'.nii' '.gz'}
-                % if these are niftis, then there should only be
-                % one file
-                assert(length(fname) == 1);
-                data{scan}    = niftiread(fullfile (dataPath, fname.name));
-                info{scan}    = niftiinfo(fullfile (dataPath, fname.name));
-            case '.mgz'
-                % if they're surfaces, there should be two of them
-                assert(length(fname) == 2);
-                hemis = {'lh', 'rh'};
-                for ll = 1: length (hemis)
-                    % We index to make sure the order is always the same
-                    idx = contains ({fname.name} , hemis{ll});
-                    tempData(ll) = MRIread(fullfile (dataPath, fname(idx).name));
-                end
-                data{scan}    = cat(2,tempData(1).vol, tempData(2).vol);
-                info{scan}    = rmfield(tempData(1), 'vol');
-                
-            otherwise
-                error('Unrecognized file format %s', ext)
-        end
+        
+            [~, ~, ext] = fileparts(fname(1).name);
+            switch ext
+                case {'.nii' '.gz'}
+                    % if these are niftis, then there should only be
+                    % one file
+                    assert(length(fname) == 1);
+                    data{scan}    = niftiread(fullfile (dataPath, fname.name));
+                    info{scan}    = niftiinfo(fullfile (dataPath, fname.name));
+                case '.mgz'
+                    % if they're surfaces, there should be two of them
+                    assert(length(fname) == 2);
+                    hemis = {'lh', 'rh'};
+                    for ll = 1: length (hemis)
+                        % We index to make sure the order is always the same
+                        idx = contains ({fname.name} , hemis{ll});
+                        tempData(ll) = MRIread(fullfile (dataPath, fname(idx).name));
+                    end
+                    data{scan}    = cat(2,tempData(1).vol, tempData(2).vol);
+                    info{scan}    = rmfield(tempData(1), 'vol');
+            
+                otherwise
+                    error('Unrecognized file format %s', ext)
+            end
+        
         scan          = scan+1;
     end
 end
