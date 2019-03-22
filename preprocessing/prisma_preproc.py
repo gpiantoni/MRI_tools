@@ -150,7 +150,7 @@ def main(arglist):
             session['Freesurfer_subject_name'] = session['BIDS_subject_name'].replace('sub-', '')
         else:
             session['Freesurfer_subject_name'] = args['subject']
-            
+
         test_files = layout.get('tuple', extensions=['nii', 'nii.gz'], suffix='bold',
                                 task=[i.replace('task-', '') for i in session["BIDS_task_names"]])
         if args['epis'] is not None:
@@ -292,12 +292,13 @@ def create_preproc_workflow(session):
     wf.add_nodes([merge_dist])
 
     # Run topup to estimate warpfield and create unwarped distortion scans
+    n_scans = 1
     if '-' not in session['PE_dim']:
-        PEs = np.repeat([session['PE_dim'], session['PE_dim'] + '-'], 3)
+        PEs = np.repeat([session['PE_dim'], session['PE_dim'] + '-'], n_scans)
     else:
-        PEs = np.repeat([session['PE_dim'], session['PE_dim'].replace('-', '')], 3)
+        PEs = np.repeat([session['PE_dim'], session['PE_dim'].replace('-', '')], n_scans)
     unwarp_dist = Node(fsl.TOPUP(encoding_direction=list(PEs),
-                                 readout_times=[1, 1, 1, 1, 1, 1],
+                                 readout_times=[1, ] * n_scans * 2,
                                  config='b02b0.cnf', fwhm=0),
                        name='unwarp_distort')
     wf.connect(merge_dist, 'merged_file', unwarp_dist, 'in_file')
