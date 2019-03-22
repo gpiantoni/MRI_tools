@@ -39,6 +39,9 @@ function bidsInitVista(projectDir, subject, session, tasks,... % runnums,
 
 %% Check inputs
 
+anatomyDir = '/Volumes/server/Projects/Anatomy';
+anatomyDir = '/Fridge/users/giovanni/projects/margriet/analysis/nyu_anatomy';
+
 if ~exist('session', 'var'), session = []; end
 if ~exist('tasks', 'var'),   tasks = []; end 
 
@@ -70,7 +73,7 @@ classPath  = fullfile('./3DAnatomy', classFile);
 
 % Look for anatomy files and make them if they don't exist
 if ~exist(fullfile(analysisDir,'./3DAnatomy'),'dir')
-    anatomyPath = fullfile('/Volumes/server/Projects/Anatomy',subject);
+    anatomyPath = fullfile(anatomyDir,subject);
     if ~exist(anatomyPath, 'dir') ||~exist(fullfile(anatomyPath, anatFile), 'file')...
             && ~exist(fullfile(anatomyPath,classFile), 'file')
         mkdir (anatomyPath);
